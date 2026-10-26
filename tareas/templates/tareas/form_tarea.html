@@ -1,0 +1,37 @@
+{% extends "tareas/base.html" %}
+
+{% block title %}{{ accion }} Tarea - Gestión de Tareas{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>{{ accion }} Tarea</h1>
+    <a href="{% url 'lista_tareas' %}" class="btn btn-outline">← Volver</a>
+</div>
+
+<div class="card" style="max-width: 600px;">
+    <form method="post">
+        {% csrf_token %}
+
+        {% for field in form %}
+        <div class="form-group">
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% if field.errors %}
+                <ul class="errorlist">
+                    {% for error in field.errors %}
+                    <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+        {% endfor %}
+
+        <div style="display: flex; gap: 0.75rem; margin-top: 1.5rem;">
+            <button type="submit" class="btn btn-primary">
+                💾 {{ accion }} Tarea
+            </button>
+            <a href="{% url 'lista_tareas' %}" class="btn btn-outline">Cancelar</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,109 @@
+{% extends "tareas/base.html" %}
+
+{% block title %}Tareas - Gestión de Tareas{% endblock %}
+
+{% block content %}
+<!-- Dashboard Stats -->
+<div class="stats-grid">
+    <div class="stat-card stat-total">
+        <div class="stat-number">{{ total }}</div>
+        <div class="stat-label">Total de Tareas</div>
+    </div>
+    <div class="stat-card stat-pendiente">
+        <div class="stat-number">{{ pendientes }}</div>
+        <div class="stat-label">Pendientes</div>
+    </div>
+    <div class="stat-card stat-progreso">
+        <div class="stat-number">{{ en_progreso }}</div>
+        <div class="stat-label">En Progreso</div>
+    </div>
+    <div class="stat-card stat-completada">
+        <div class="stat-number">{{ completadas }}</div>
+        <div class="stat-label">Completadas</div>
+    </div>
+</div>
+
+<!-- Page Header -->
+<div class="page-header">
+    <h1>📋 Mis Tareas</h1>
+    <a href="{% url 'crear_tarea' %}" class="btn btn-primary">+ Nueva Tarea</a>
+</div>
+
+<!-- Filters -->
+<form method="get" class="filters-bar">
+    <input type="text" name="q" class="form-control search-input"
+           placeholder="🔍 Buscar tareas..." value="{{ busqueda }}">
+
+    <select name="estado" class="form-control" onchange="this.form.submit()">
+        <option value="">Todos los estados</option>
+        <option value="pendiente" {% if filtro_estado == 'pendiente' %}selected{% endif %}>Pendiente</option>
+        <option value="en_progreso" {% if filtro_estado == 'en_progreso' %}selected{% endif %}>En Progreso</option>
+        <option value="completada" {% if filtro_estado == 'completada' %}selected{% endif %}>Completada</option>
+        <option value="cancelada" {% if filtro_estado == 'cancelada' %}selected{% endif %}>Cancelada</option>
+    </select>
+
+    <select name="prioridad" class="form-control" onchange="this.form.submit()">
+        <option value="">Todas las prioridades</option>
+        <option value="baja" {% if filtro_prioridad == 'baja' %}selected{% endif %}>Baja</option>
+        <option value="media" {% if filtro_prioridad == 'media' %}selected{% endif %}>Media</option>
+        <option value="alta" {% if filtro_prioridad == 'alta' %}selected{% endif %}>Alta</option>
+        <option value="urgente" {% if filtro_prioridad == 'urgente' %}selected{% endif %}>Urgente</option>
+    </select>
+
+    <button type="submit" class="btn btn-outline btn-sm">Filtrar</button>
+    {% if filtro_estado or filtro_prioridad or busqueda %}
+        <a href="{% url 'lista_tareas' %}" class="btn btn-outline btn-sm">Limpiar</a>
+    {% endif %}
+</form>
+
+<!-- Task List -->
+{% if tareas %}
+    {% for tarea in tareas %}
+    <div class="task-item {% if tarea.completada %}completed{% endif %}">
+        <a href="{% url 'toggle_completada' tarea.pk %}"
+           class="task-checkbox {% if tarea.completada %}checked{% endif %}"
+           title="{% if tarea.completada %}Desmarcar{% else %}Completar{% endif %}">
+        </a>
+
+        <div class="task-info">
+            <div class="task-title">
+                <a href="{% url 'detalle_tarea' tarea.pk %}">{{ tarea.titulo }}</a>
+            </div>
+            <div class="task-meta">
+                <span class="badge badge-{{ tarea.estado }}">{{ tarea.get_estado_display }}</span>
+                <span class="badge badge-{{ tarea.prioridad }}">{{ tarea.get_prioridad_display }}</span>
+                {% if tarea.categoria %}
+                    <span class="cat-badge">
+                        <span class="cat-dot" style="background: {{ tarea.categoria.color }};"></span>
+                        {{ tarea.categoria.nombre }}
+                    </span>
+                {% endif %}
+                {% if tarea.fecha_vencimiento %}
+                    <span {% if tarea.esta_vencida %}style="color: var(--danger);"{% endif %}>
+                        📅 {{ tarea.fecha_vencimiento }}
+                    </span>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="task-actions">
+            <a href="{% url 'editar_tarea' tarea.pk %}" class="btn btn-outline btn-sm">✏️ Editar</a>
+            <a href="{% url 'eliminar_tarea' tarea.pk %}" class="btn btn-danger btn-sm">🗑️</a>
+        </div>
+    </div>
+    {% endfor %}
+{% else %}
+    <div class="card" style="text-align: center; padding: 3rem;">
+        <p style="font-size: 3rem; margin-bottom: 1rem;">📭</p>
+        <h3 style="color: var(--text-secondary);">No hay tareas</h3>
+        <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+            {% if busqueda or filtro_estado or filtro_prioridad %}
+                No se encontraron tareas con los filtros seleccionados.
+            {% else %}
+                ¡Crea tu primera tarea para comenzar!
+            {% endif %}
+        </p>
+        <a href="{% url 'crear_tarea' %}" class="btn btn-primary">+ Crear Tarea</a>
+    </div>
+{% endif %}
+{% endblock %}

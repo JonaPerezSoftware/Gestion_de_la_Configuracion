@@ -1,0 +1,27 @@
+{% extends "tareas/base.html" %}
+
+{% block title %}Eliminar Tarea - Gestión de Tareas{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>⚠️ Eliminar Tarea</h1>
+</div>
+
+<div class="card" style="max-width: 500px;">
+    <p style="margin-bottom: 1rem;">
+        ¿Estás seguro de que deseas eliminar la tarea
+        <strong>"{{ tarea.titulo }}"</strong>?
+    </p>
+    <p style="color: var(--danger); font-size: 0.9rem; margin-bottom: 1.5rem;">
+        Esta acción no se puede deshacer.
+    </p>
+
+    <form method="post">
+        {% csrf_token %}
+        <div style="display: flex; gap: 0.75rem;">
+            <button type="submit" class="btn btn-danger">🗑️ Sí, eliminar</button>
+            <a href="{% url 'lista_tareas' %}" class="btn btn-outline">Cancelar</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

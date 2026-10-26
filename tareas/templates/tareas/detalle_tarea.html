@@ -1,0 +1,70 @@
+{% extends "tareas/base.html" %}
+
+{% block title %}{{ tarea.titulo }} - Gestión de Tareas{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>{{ tarea.titulo }}</h1>
+    <div style="display: flex; gap: 0.75rem;">
+        <a href="{% url 'editar_tarea' tarea.pk %}" class="btn btn-primary">✏️ Editar</a>
+        <a href="{% url 'lista_tareas' %}" class="btn btn-outline">← Volver</a>
+    </div>
+</div>
+
+<div class="card">
+    {% if tarea.descripcion %}
+    <p style="margin-bottom: 1.5rem; color: var(--text-secondary); line-height: 1.6;">
+        {{ tarea.descripcion }}
+    </p>
+    {% endif %}
+
+    <div class="detail-grid">
+        <div class="detail-item">
+            <div class="detail-label">Estado</div>
+            <div class="detail-value">
+                <span class="badge badge-{{ tarea.estado }}">{{ tarea.get_estado_display }}</span>
+            </div>
+        </div>
+        <div class="detail-item">
+            <div class="detail-label">Prioridad</div>
+            <div class="detail-value">
+                <span class="badge badge-{{ tarea.prioridad }}">{{ tarea.get_prioridad_display }}</span>
+            </div>
+        </div>
+        <div class="detail-item">
+            <div class="detail-label">Categoría</div>
+            <div class="detail-value">
+                {% if tarea.categoria %}
+                    <span class="cat-badge">
+                        <span class="cat-dot" style="background: {{ tarea.categoria.color }};"></span>
+                        {{ tarea.categoria.nombre }}
+                    </span>
+                {% else %}
+                    <span style="color: var(--text-secondary);">Sin categoría</span>
+                {% endif %}
+            </div>
+        </div>
+        <div class="detail-item">
+            <div class="detail-label">Fecha de Vencimiento</div>
+            <div class="detail-value">
+                {% if tarea.fecha_vencimiento %}
+                    <span {% if tarea.esta_vencida %}style="color: var(--danger);"{% endif %}>
+                        📅 {{ tarea.fecha_vencimiento }}
+                        {% if tarea.esta_vencida %}(Vencida){% endif %}
+                    </span>
+                {% else %}
+                    <span style="color: var(--text-secondary);">No definida</span>
+                {% endif %}
+            </div>
+        </div>
+        <div class="detail-item">
+            <div class="detail-label">Creada</div>
+            <div class="detail-value">{{ tarea.creado_en|date:"d/m/Y H:i" }}</div>
+        </div>
+        <div class="detail-item">
+            <div class="detail-label">Última actualización</div>
+            <div class="detail-value">{{ tarea.actualizado_en|date:"d/m/Y H:i" }}</div>
+        </div>
+    </div>
+</div>
+{% endblock %}
